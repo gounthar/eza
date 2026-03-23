@@ -19,13 +19,11 @@ jobs:
 
       - name: Setup Rust
         run: |
-          # Use pre-installed Rust on RISE runner, fall back to rustup
-          if command -v rustc &>/dev/null; then
-            echo "Using system Rust: $(rustc --version)"
-          else
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          fi
+          # System Rust at /opt/rust has permission issues; install user-local
+          export RUSTUP_HOME="$HOME/.rustup"
+          export CARGO_HOME="$HOME/.cargo"
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       - name: Build
         run: |
