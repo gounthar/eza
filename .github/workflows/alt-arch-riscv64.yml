@@ -17,10 +17,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Rust
+      - name: Setup Rust
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          # Use pre-installed Rust on RISE runner, fall back to rustup
+          if command -v rustc &>/dev/null; then
+            echo "Using system Rust: $(rustc --version)"
+          else
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+            echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          fi
 
       - name: Build
         run: |
